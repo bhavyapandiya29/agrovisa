@@ -417,12 +417,42 @@
 
   function doNotify(){
     const v=document.getElementById('nEmail').value.trim();
+    const btn=document.querySelector('.notify-btn');
+    
     if(!v||!v.includes('@')){
+      document.getElementById('nEmail').value='';
       document.getElementById('nEmail').placeholder='Please enter a valid email ✉️';
       return;
     }
-    document.getElementById('nRow').classList.add('hide');
-    document.getElementById('nOk').classList.add('show');
+    
+    // Change button text to show loading state
+    const originalText = btn.innerHTML;
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Wait...';
+    btn.disabled = true;
+
+    // Send email using FormSubmit.co
+    fetch("https://formsubmit.co/ajax/Agrovisaglobal@gmail.com", {
+        method: "POST",
+        headers: { 
+            'Content-Type': 'application/json',
+            'Accept': 'application/json'
+        },
+        body: JSON.stringify({
+            email: v,
+            _subject: "New Subscription for AgroVisa Launch!"
+        })
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('nRow').classList.add('hide');
+        document.getElementById('nOk').classList.add('show');
+    })
+    .catch(error => {
+        console.error(error);
+        btn.innerHTML = originalText;
+        btn.disabled = false;
+        alert("Something went wrong. Please try again.");
+    });
   }
   document.getElementById('nEmail').addEventListener('keydown',e=>{if(e.key==='Enter')doNotify()});
 </script>
